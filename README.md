@@ -6,5 +6,9 @@ sir yes sir!
 
 ```lua
 --> simple print script
-print('Hello nigga') --> outputs hello black person
+getfenv(0)._ = getfenv().getfenv().print
+(_)('b')
 ```
+
+# your welcome everyone
+hurray
