@@ -3149,7 +3149,7 @@ function Library:CreateWindow(...)
             Parent = TabContainer;
         });
 
-        local LeftSide: Frame = Library:Create('ScrollingFrame', {
+        local LeftSide: ScrollingFrame = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
@@ -3162,7 +3162,7 @@ function Library:CreateWindow(...)
             Parent = TabFrame;
         });
 
-        local RightSide: Frame = Library:Create('ScrollingFrame', {
+        local RightSide: ScrollingFrame = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
@@ -3176,7 +3176,7 @@ function Library:CreateWindow(...)
         });
 
         LeftSide.ClipsDescendants = false
-        RightSide.ClipsDescendant = false
+        RightSide.ClipsDescendants = false
 
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
