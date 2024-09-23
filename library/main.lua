@@ -113,7 +113,7 @@ function Library:SafeCallback(f, ...)
     local success, event = pcall(f, ...);
 
     if not success then
-        local _, i = event:find(":%d+: ");
+        local _, i = event:find(':%d+: ');
 
         if not i then
             return Library:Notify(event);
@@ -3175,8 +3175,8 @@ function Library:CreateWindow(...)
             Parent = TabFrame;
         });
 
-        LeftSide.ClipsDescendants = false
-        RightSide.ClipsDescendants = false
+        LeftSide.ClipsDescendants = true
+        RightSide.ClipsDescendants = true
 
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
