@@ -3548,6 +3548,19 @@ function Library:CreateWindow(...)
     local Toggled = false;
     local Fading = false;
 
+    local Cursor = Library:Create('ImageLabel', {
+        Name = 'Cursor';
+        BackgroundTransparency = 1;
+        Size = UDim2.new(0, 17, 0, 17);
+        Image = "rbxassetid://7205257578";
+        ZIndex = 6969;
+        Parent = ScreenGui;
+    })
+
+    RunService.PreRender:Connect(function()
+        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y + 36)
+    end)
+
     function Library:Toggle()
         if Fading then
             return;
@@ -3599,6 +3612,7 @@ function Library:CreateWindow(...)
         task.wait(FadeTime);
 
         Outer.Visible = Toggled;
+        Cursor.Visible = Toggled
 
         Fading = false;
     end
