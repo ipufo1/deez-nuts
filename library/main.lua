@@ -3558,7 +3558,7 @@ function Library:CreateWindow(...)
     })
 
     RunService.PreRender:Connect(function()
-        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y + 36)
+        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y)
     end)
 
     function Library:Toggle()
