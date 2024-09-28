@@ -1171,7 +1171,7 @@ do
 
             ContainerLabel.Text = string.format('[%s] %s (%s)', KeyPicker.Value, Info.Text, KeyPicker.Mode);
 
-            if State then ContainerLabel.Visible = true; Library.KeybindContainer.Visible = true end
+            if State then ContainerLabel.Visible = true; else ContainerLabel.Visible = false end
             ContainerLabel.TextColor3 = Library.FontColor;
 
             Library.RegistryMap[ContainerLabel].Properties.TextColor3 = State and 'AccentColor' or 'FontColor';
@@ -2846,6 +2846,7 @@ do
     })
 
     Library.KeybindFrame = KeybindOuter;
+    Library.KeybindFrame.Visible = true
     Library.KeybindContainer = KeybindContainer;
     Library:MakeDraggable(KeybindOuter);
 end;
