@@ -3036,6 +3036,7 @@ function Library:CreateWindow(...)
         Text = Config.Title or '';
         TextXAlignment = Enum.TextXAlignment.Left;
         ZIndex = 1;
+        RichText = true;
         Parent = Inner;
     });
 
