@@ -13,7 +13,7 @@ end
 
 local InputService = game:GetService('UserInputService');
 local TextService = game:GetService('TextService');
-local CoreGui = game:GetService('CoreGui');
+local CoreGui = cloneref(game:GetService('CoreGui'));
 local Teams = game:GetService('Teams');
 local Players = game:GetService('Players');
 local RunService = game:GetService('RunService')
@@ -25,7 +25,7 @@ local Mouse = LocalPlayer:GetMouse();
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
 local ScreenGui = Instance.new('ScreenGui');
-ScreenGui.DisplayOrder = 0x7fffffff
+ScreenGui.DisplayOrder = 99e99
 ProtectGui(ScreenGui);
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
@@ -97,7 +97,7 @@ local function GetTeamsString()
     end;
 
     table.sort(TeamList, function(str1, str2) return str1 < str2 end);
-    
+
     return TeamList;
 end;
 
@@ -566,7 +566,7 @@ do
             Parent = HueSelectorOuter;
         });
 
-        local HueCursor = Library:Create('Frame', { 
+        local HueCursor = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(1, 1, 1);
             AnchorPoint = Vector2.new(0, 0.5);
             BorderColor3 = Color3.new(0, 0, 0);
@@ -632,8 +632,8 @@ do
         });
 
         local TransparencyBoxOuter, TransparencyBoxInner, TransparencyCursor;
-        
-        if Info.Transparency then 
+
+        if Info.Transparency then
             TransparencyBoxOuter = Library:Create('Frame', {
                 BorderColor3 = Color3.new(0, 0, 0);
                 Position = UDim2.fromOffset(4, 251);
@@ -661,7 +661,7 @@ do
                 Parent = TransparencyBoxInner;
             });
 
-            TransparencyCursor = Library:Create('Frame', { 
+            TransparencyCursor = Library:Create('Frame', {
                 BackgroundColor3 = Color3.new(1, 1, 1);
                 AnchorPoint = Vector2.new(0.5, 0);
                 BorderColor3 = Color3.new(0, 0, 0);
@@ -771,7 +771,7 @@ do
                     TextXAlignment = Enum.TextXAlignment.Left,
                 });
 
-                Library:OnHighlight(Button, Button, 
+                Library:OnHighlight(Button, Button,
                     { TextColor3 = 'AccentColor' },
                     { TextColor3 = 'FontColor' }
                 );
@@ -1353,7 +1353,6 @@ do
         return Funcs[Key](...);
     end;
 end;
-
 local BaseGroupbox = {};
 
 do
@@ -2620,7 +2619,7 @@ do
         local Depbox = {
             Dependencies = {};
         };
-        
+
         local Groupbox = self;
         local Container = Groupbox.Container;
 
@@ -2863,6 +2862,11 @@ function Library:SetWatermark(Text)
     Library.WatermarkText.Text = Text;
 end;
 
+Library.OnToggleConnections = {}
+function Library:OnToggle(Callback)
+    table.insert(Library.OnToggleConnections, Callback)
+end
+
 function Library:Notify(Text, Time)
     local XSize, YSize = Library:GetTextBounds(Text, Library.Font, 12);
 
@@ -3086,7 +3090,7 @@ function Library:CreateWindow(...)
         ZIndex = 2;
         Parent = MainSectionInner;
     });
-    
+
 
     Library:AddToRegistry(TabContainer, {
         BackgroundColor3 = 'MainColor';
@@ -3610,12 +3614,19 @@ function Library:CreateWindow(...)
             end;
         end;
 
-        task.wait(FadeTime);
-
         Outer.Visible = Toggled;
         Cursor.Visible = Toggled
 
+        TweenService:Create(Outer, TweenInfo.new(FadeTime), { BackgroundTransparency = Toggled and 1 or 0 }):Play()
+        TweenService:Create(Cursor, TweenInfo.new(FadeTime), { ImageTransparency = Toggled and 1 or 0 }):Play()
+
+        task.wait(FadeTime);
+
         Fading = false;
+
+        for _, Callback in Library.OnToggleConnections do
+            Callback(Toggled)
+        end
     end
 
     Library:GiveSignal(InputService.InputBegan:Connect(function(Input, Processed)
