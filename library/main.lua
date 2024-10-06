@@ -3615,13 +3615,13 @@ function Library:CreateWindow(...)
             end;
         end;
 
-        Outer.Visible = Toggled;
-        Cursor.Visible = Toggled
-
         TweenService:Create(Outer, TweenInfo.new(FadeTime), { BackgroundTransparency = Toggled and 1 or 0 }):Play()
         TweenService:Create(Cursor, TweenInfo.new(FadeTime), { ImageTransparency = Toggled and 1 or 0 }):Play()
 
         task.wait(FadeTime);
+
+        Outer.Visible = Toggled;
+        Cursor.Visible = Toggled
 
         Fading = false;
 
