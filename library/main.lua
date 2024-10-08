@@ -3558,14 +3558,14 @@ function Library:CreateWindow(...)
         Name = 'Cursor';
         BackgroundTransparency = 1;
         Size = UDim2.new(0, 17, 0, 17);
-        Image = "rbxassetid://7205257578";
+        Image = "rbxassetid://76170730910067";
         ZIndex = 6969;
         Parent = ScreenGui;
     })
 
     local GuiInset = game:GetService('GuiService'):GetGuiInset()
     RunService.PreRender:Connect(function()
-        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y - GuiInset.Y)
+        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y - 0 --[[GuiInset.Y]])
     end)
 
     function Library:Toggle()
@@ -3618,11 +3618,11 @@ function Library:CreateWindow(...)
 
         TweenService:Create(Outer, TweenInfo.new(FadeTime), { BackgroundTransparency = Toggled and 0 or 1 }):Play()
         TweenService:Create(Cursor, TweenInfo.new(FadeTime), { ImageTransparency = Toggled and 0 or 1 }):Play()
+        Cursor.Visible = Toggled;
 
         task.wait(FadeTime);
 
         Outer.Visible = Toggled;
-        Cursor.Visible = Toggled;
         InputService.MouseIconEnabled = not Toggled;
 
         Fading = false;
