@@ -3563,11 +3563,9 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
     })
 
+    local GuiInset = game:GetService('GuiService'):GetGuiInset()
     RunService.PreRender:Connect(function()
-        if Toggled then
-            InputService.MouseIconEnabled = false
-        end
-        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y - game:GetService('GuiService'):GetGuiInset().Y)
+        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y - GuiInset.Y)
     end)
 
     function Library:Toggle()
@@ -3624,8 +3622,8 @@ function Library:CreateWindow(...)
         task.wait(FadeTime);
 
         Outer.Visible = Toggled;
-        Cursor.Visible = Toggled
-        InputService.MouseIconEnabled = Toggled
+        Cursor.Visible = Toggled;
+        InputService.MouseIconEnabled = Toggled;
 
         Fading = false;
 
