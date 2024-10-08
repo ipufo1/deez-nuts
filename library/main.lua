@@ -13,7 +13,7 @@ end
 
 local InputService = game:GetService('UserInputService');
 local TextService = game:GetService('TextService');
-local CoreGui = cloneref(game:GetService('CoreGui'));
+local CoreGui = gethui and gethui() or cloneref(game:GetService('CoreGui'));
 local Teams = game:GetService('Teams');
 local Players = game:GetService('Players');
 local RunService = game:GetService('RunService')
@@ -25,7 +25,7 @@ local Mouse = LocalPlayer:GetMouse();
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
 local ScreenGui = Instance.new('ScreenGui');
-ScreenGui.DisplayOrder = 99e99
+ScreenGui.DisplayOrder = 0x7fffffff
 ProtectGui(ScreenGui);
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
@@ -3615,8 +3615,8 @@ function Library:CreateWindow(...)
             end;
         end;
 
-        TweenService:Create(Outer, TweenInfo.new(FadeTime), { BackgroundTransparency = Toggled and 1 or 0 }):Play()
-        TweenService:Create(Cursor, TweenInfo.new(FadeTime), { ImageTransparency = Toggled and 1 or 0 }):Play()
+        TweenService:Create(Outer, TweenInfo.new(FadeTime), { BackgroundTransparency = Toggled and 0 or 1 }):Play()
+        TweenService:Create(Cursor, TweenInfo.new(FadeTime), { ImageTransparency = Toggled and 0 or 1 }):Play()
 
         task.wait(FadeTime);
 
