@@ -3564,6 +3564,9 @@ function Library:CreateWindow(...)
     })
 
     RunService.PreRender:Connect(function()
+        if Toggled then
+            InputService.MouseIconEnabled = false
+        end
         Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y - game:GetService('GuiService'):GetGuiInset().Y)
     end)
 
@@ -3622,6 +3625,7 @@ function Library:CreateWindow(...)
 
         Outer.Visible = Toggled;
         Cursor.Visible = Toggled
+        InputService.MouseIconEnabled = Toggled
 
         Fading = false;
 
