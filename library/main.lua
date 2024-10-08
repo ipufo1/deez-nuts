@@ -3623,7 +3623,7 @@ function Library:CreateWindow(...)
 
         Outer.Visible = Toggled;
         Cursor.Visible = Toggled;
-        InputService.MouseIconEnabled = Toggled;
+        InputService.MouseIconEnabled = not Toggled;
 
         Fading = false;
 
