@@ -321,6 +321,7 @@ function Library:GetTextBounds(Text, Font, Size, Resolution)
         BoundParams.Text = Text
         BoundParams.Font = Font
         BoundParams.Size = 12
+        BoundParams.RichText = true
     end
 
     local Bounds = TextService:GetTextBoundsAsync(BoundParams) --> fix for fontfaces
@@ -2770,6 +2771,7 @@ do
         TextSize = 12;
         TextXAlignment = Enum.TextXAlignment.Left;
         ZIndex = 203;
+        RichText = true;
         Parent = InnerFrame;
     });
 
@@ -3558,14 +3560,14 @@ function Library:CreateWindow(...)
         Name = 'Cursor';
         BackgroundTransparency = 1;
         Size = UDim2.new(0, 17, 0, 17);
-        Image = "rbxassetid://76170730910067";
+        Image = "rbxassetid://7205257578";
         ZIndex = 6969;
         Parent = ScreenGui;
     })
 
     local GuiInset = game:GetService('GuiService'):GetGuiInset()
     RunService.PreRender:Connect(function()
-        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y - 0 --[[GuiInset.Y]])
+        Cursor.Position = UDim2.new(0, InputService:GetMouseLocation().X, 0, InputService:GetMouseLocation().Y - GuiInset.Y)
     end)
 
     function Library:Toggle()
