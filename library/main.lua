@@ -1796,7 +1796,7 @@ do
                 if cursor ~= -1 then
                     -- calculate pixel width of text from start to cursor
                     local subtext = string.sub(Box.Text, 1, cursor-1)
-                    local width, yAxis = Library:GetTextBounds(subtext, Box.Font, Box.TextSize)
+                    local width, yAxis = Library:GetTextBounds(subtext, Library.Font, Box.TextSize)
 
                     -- check if we're inside the box with the cursor
                     local currentCursorPos = Box.Position.X.Offset + width
