@@ -1,12 +1,22 @@
--- Made by jLn0n
--- https://raw.githubusercontent.com/OxygenClub/Random-LUAS/main/drawing-i-keep-updating-this.lua
+local coreGui = (gethui and gethui()) or cloneref and cloneref(game:GetService('CoreGui')) or game:GetService('CoreGui') or error('fuck you!!')
 
--- services
-local coreGui = gethui and gethui() or game:GetService("CoreGui")
+local function Font_new(name, weight: Enum.FontWeight, data): Font --> ik it looks retarded but less lines
+    local http = game:GetService('HttpService')
+    local path = `fonts/{name}`
+    if (not makefolder and not isfolder) then return end
+    if (not writefile and not isfile) then return end
+    if (not getcustomasset) then return end
+    if not isfolder('fonts') then makefolder('fonts') end
+    if not isfile(`{path}.ttf`) then writefile(`{path}.ttf`, data) end
+    local json = { ['name'] = name; ['faces'] = { { ['name'] = 'Regular'; ['weight'] = 400; ['style'] = 'normal'; ['assetId'] = getcustomasset(`{path}.ttf`) } } }
+    if not isfile(`{path}.json`) then writefile(`{path}.json`, http:JSONEncode(json)) end
+    return Font.new( getcustomasset(`{path}.json`), weight )
+end
+
 -- objects
 local camera = workspace.CurrentCamera
-local drawingUI = Instance.new("ScreenGui")
-drawingUI.Name = "\0"
+local drawingUI = Instance.new('ScreenGui')
+drawingUI.Name = 'Drawing'
 drawingUI.IgnoreGuiInset = true
 drawingUI.DisplayOrder = 0x7fffffff
 drawingUI.Parent = coreGui
@@ -20,8 +30,7 @@ local baseDrawingObj = setmetatable({
     Color = Color3.new(),
     Remove = function(self)
         setmetatable(self, nil)
-    end;
-
+    end,
     Destroy = function(self)
         setmetatable(self, nil)
     end
@@ -36,9 +45,9 @@ local baseDrawingObj = setmetatable({
     end
 })
 local drawingFontsEnum = {
-    [0] = Font.fromEnum(Enum.Font.Roboto),
+    [0] = Font.fromId(12187371840, Enum.FontWeight.Regular),
     [1] = Font.fromEnum(Enum.Font.Legacy),
-    [2] = Font.fromEnum(Enum.Font.SourceSans),
+    [2] = Font_new('drawing_proggy', Enum.FontWeight.Regular, request({Url = 'https://github.com/ipufo1/deez-nuts/blob/main/fonts/my_font.txt?raw=true'; Method = 'GET'}).Body),
     [3] = Font.fromEnum(Enum.Font.RobotoMono),
 }
 -- function
@@ -52,22 +61,22 @@ end
 -- main
 local DrawingLib = {}
 DrawingLib.Fonts = {
-    ["UI"] = 0,
-    ["System"] = 1,
-    ["Flex"] = 2,
-    ["Monospace"] = 3
+    ['UI'] = 0,
+    ['System'] = 1,
+    ['Plex'] = 2,
+    ['Monospace'] = 3
 }
 
 function DrawingLib.new(drawingType)
     drawingIndex += 1
-    if drawingType == "Line" then
+    if drawingType == 'Line' then
         local lineObj = ({
             From = Vector2.zero,
             To = Vector2.zero,
             Thickness = 1
         } + baseDrawingObj)
 
-        local lineFrame = Instance.new("Frame")
+        local lineFrame = Instance.new('Frame')
         lineFrame.Name = drawingIndex
         lineFrame.AnchorPoint = (Vector2.one * .5)
         lineFrame.BorderSizePixel = 0
@@ -81,12 +90,12 @@ function DrawingLib.new(drawingType)
 
         lineFrame.Parent = drawingUI
         return setmetatable({
-            __OBJECT = lineFrame
+            obj = lineFrame
         }, {
             __newindex = function(_, index, value)
-                if typeof(lineObj[index]) == "nil" then return end
+                if typeof(lineObj[index]) == 'nil' then return end
 
-                if index == "From" then
+                if index == 'From' then
                     local direction = (lineObj.To - value)
                     local center = (lineObj.To + value) / 2
                     local distance = direction.Magnitude
@@ -95,7 +104,7 @@ function DrawingLib.new(drawingType)
                     lineFrame.Position = UDim2.fromOffset(center.X, center.Y)
                     lineFrame.Rotation = theta
                     lineFrame.Size = UDim2.fromOffset(distance, lineObj.Thickness)
-                elseif index == "To" then
+                elseif index == 'To' then
                     local direction = (value - lineObj.From)
                     local center = (value + lineObj.From) / 2
                     local distance = direction.Magnitude
@@ -104,23 +113,23 @@ function DrawingLib.new(drawingType)
                     lineFrame.Position = UDim2.fromOffset(center.X, center.Y)
                     lineFrame.Rotation = theta
                     lineFrame.Size = UDim2.fromOffset(distance, lineObj.Thickness)
-                elseif index == "Thickness" then
+                elseif index == 'Thickness' then
                     local distance = (lineObj.To - lineObj.From).Magnitude
 
                     lineFrame.Size = UDim2.fromOffset(distance, value)
-                elseif index == "Visible" then
+                elseif index == 'Visible' then
                     lineFrame.Visible = value
-                elseif index == "ZIndex" then
+                elseif index == 'ZIndex' then
                     lineFrame.ZIndex = value
-                elseif index == "Transparency" then
+                elseif index == 'Transparency' then
                     lineFrame.BackgroundTransparency = convertTransparency(value)
-                elseif index == "Color" then
+                elseif index == 'Color' then
                     lineFrame.BackgroundColor3 = value
                 end
                 lineObj[index] = value
             end,
             __index = function(self, index)
-                if index == "Remove" then
+                if index == 'Remove' or index == 'Destroy' then
                     return function()
                         lineFrame:Destroy()
                         lineObj.Remove(self)
@@ -128,11 +137,12 @@ function DrawingLib.new(drawingType)
                     end
                 end
                 return lineObj[index]
-            end
+            end,
+            __tostring = function() return 'Drawing' end
         })
-    elseif drawingType == "Text" then
+    elseif drawingType == 'Text' then
         local textObj = ({
-            Text = "",
+            Text = '',
             Font = DrawingLib.Fonts.UI,
             Size = 0,
             Position = Vector2.zero,
@@ -141,12 +151,11 @@ function DrawingLib.new(drawingType)
             OutlineColor = Color3.new()
         } + baseDrawingObj)
 
-        local textLabel = Instance.new("TextLabel")
+        local textLabel, uiStroke = Instance.new('TextLabel'), Instance.new('UIStroke')
         textLabel.Name = drawingIndex
         textLabel.AnchorPoint = (Vector2.one * .5)
         textLabel.BorderSizePixel = 0
         textLabel.BackgroundTransparency = 1
-        textLabel.RichText = true
 
         textLabel.Visible = textObj.Visible
         textLabel.TextColor3 = textObj.Color
@@ -156,7 +165,7 @@ function DrawingLib.new(drawingType)
         textLabel.FontFace = getFontFromIndex(textObj.Font)
         textLabel.TextSize = textObj.Size
 
-        textLabel:GetPropertyChangedSignal("TextBounds"):Connect(function()
+        textLabel:GetPropertyChangedSignal('TextBounds'):Connect(function()
             local textBounds = textLabel.TextBounds
             local offset = textBounds / 2
 
@@ -164,68 +173,61 @@ function DrawingLib.new(drawingType)
             textLabel.Position = UDim2.fromOffset(textObj.Position.X + (if not textObj.Center then offset.X else 0), textObj.Position.Y + offset.Y)
         end)
 
-        textLabel.TextStrokeTransparency = 1
+        uiStroke.Thickness = 1
+        uiStroke.Enabled = textObj.Outline
+        uiStroke.Color = textObj.Color
 
-        textLabel.Parent = drawingUI
+        textLabel.Parent, uiStroke.Parent = drawingUI, textLabel
         return setmetatable({
-            __OBJECT = textLabel
+            obj = textObj
         }, {
             __newindex = function(_, index, value)
-                if typeof(textObj[index]) == "nil" then return end
+                if typeof(textObj[index]) == 'nil' then return end
 
-                if index == "Text" then
+                if index == 'Text' then
                     textLabel.Text = value
-                elseif index == "Font" then
+                elseif index == 'Font' then
                     value = math.clamp(value, 0, 3)
                     textLabel.FontFace = getFontFromIndex(value)
-                elseif index == "Size" then
+                elseif index == 'Size' then
                     textLabel.TextSize = value
-                elseif index == "Position" then
+                elseif index == 'Position' then
                     local offset = textLabel.TextBounds / 2
-
                     textLabel.Position = UDim2.fromOffset(value.X + (if not textObj.Center then offset.X else 0), value.Y + offset.Y)
-                elseif index == "Center" then
-                    local position = (
-                        if value then
-                            camera.ViewportSize / 2
-                        else
-                            textObj.Position
-                    )
-
-                    textLabel.Position = UDim2.fromOffset(position.X, position.Y)
-                elseif index == "Outline" then
-                    --uiStroke.Enabled = value
-                    textLabel.TextStrokeTransparency = value and 0 or 1
-                elseif index == "OutlineColor" then
-                    --uiStroke.Color = value
-                elseif index == "Visible" then
+                elseif index == 'Center' then
+                elseif index == 'Outline' then
+                    uiStroke.Enabled = value
+                elseif index == 'OutlineColor' then
+                    uiStroke.Color = value
+                elseif index == 'Visible' then
                     textLabel.Visible = value
-                elseif index == "ZIndex" then
+                elseif index == 'ZIndex' then
                     textLabel.ZIndex = value
-                elseif index == "Transparency" then
+                elseif index == 'Transparency' then
                     local transparency = convertTransparency(value)
 
                     textLabel.TextTransparency = transparency
-                    --uiStroke.Transparency = transparency
-                elseif index == "Color" then
+                    uiStroke.Transparency = transparency
+                elseif index == 'Color' then
                     textLabel.TextColor3 = value
                 end
                 textObj[index] = value
             end,
             __index = function(self, index)
-                if index == "Remove" or index == 'Destroy' then
+                if index == 'Remove' or index == 'Destroy' then
                     return function()
                         textLabel:Destroy()
                         textObj.Remove(self)
                         return textObj:Remove()
                     end
-                elseif index == "TextBounds" then
+                elseif index == 'TextBounds' then
                     return textLabel.TextBounds
                 end
                 return textObj[index]
-            end
+            end,
+            __tostring = function() return 'Drawing' end
         })
-    elseif drawingType == "Circle" then
+    elseif drawingType == 'Circle' then
         local circleObj = ({
             Radius = 150,
             Position = Vector2.zero,
@@ -233,7 +235,7 @@ function DrawingLib.new(drawingType)
             Filled = false
         } + baseDrawingObj)
 
-        local circleFrame, uiCorner, uiStroke = Instance.new("Frame"), Instance.new("UICorner"), Instance.new("UIStroke")
+        local circleFrame, uiCorner, uiStroke = Instance.new('Frame'), Instance.new('UICorner'), Instance.new('UIStroke')
         circleFrame.Name = drawingIndex
         circleFrame.AnchorPoint = (Vector2.one * .5)
         circleFrame.BorderSizePixel = 0
@@ -252,40 +254,39 @@ function DrawingLib.new(drawingType)
 
         circleFrame.Parent, uiCorner.Parent, uiStroke.Parent = drawingUI, circleFrame, circleFrame
         return setmetatable({
-            __OBJECT = circleFrame,
-            __SIDE = uiStroke
+            obj = circleFrame
         }, {
             __newindex = function(_, index, value)
-                if typeof(circleObj[index]) == "nil" then return end
+                if typeof(circleObj[index]) == 'nil' then return end
 
-                if index == "Radius" then
+                if index == 'Radius' then
                     local radius = value * 2
                     circleFrame.Size = UDim2.fromOffset(radius, radius)
-                elseif index == "Position" then
+                elseif index == 'Position' then
                     circleFrame.Position = UDim2.fromOffset(value.X, value.Y)
-                elseif index == "Thickness" then
+                elseif index == 'Thickness' then
                     value = math.clamp(value, .6, 0x7fffffff)
                     uiStroke.Thickness = value
-                elseif index == "Filled" then
+                elseif index == 'Filled' then
                     circleFrame.BackgroundTransparency = (if value then convertTransparency(circleObj.Transparency) else 1)
                     uiStroke.Enabled = not value
-                elseif index == "Visible" then
+                elseif index == 'Visible' then
                     circleFrame.Visible = value
-                elseif index == "ZIndex" then
+                elseif index == 'ZIndex' then
                     circleFrame.ZIndex = value
-                elseif index == "Transparency" then
+                elseif index == 'Transparency' then
                     local transparency = convertTransparency(value)
 
                     circleFrame.BackgroundTransparency = (if circleObj.Filled then transparency else 1)
                     uiStroke.Transparency = transparency
-                elseif index == "Color" then
+                elseif index == 'Color' then
                     circleFrame.BackgroundColor3 = value
                     uiStroke.Color = value
                 end
                 circleObj[index] = value
             end,
             __index = function(self, index)
-                if index == "Remove" or index == 'Destroy' then
+                if index == 'Remove' or index == 'Destroy' then
                     return function()
                         circleFrame:Destroy()
                         circleObj.Remove(self)
@@ -293,9 +294,10 @@ function DrawingLib.new(drawingType)
                     end
                 end
                 return circleObj[index]
-            end
+            end,
+            __tostring = function() return 'Drawing' end
         })
-    elseif drawingType == "Square" then
+    elseif drawingType == 'Square' then
         local squareObj = ({
             Size = Vector2.zero,
             Position = Vector2.zero,
@@ -303,7 +305,7 @@ function DrawingLib.new(drawingType)
             Filled = false
         } + baseDrawingObj)
 
-        local squareFrame, uiStroke = Instance.new("Frame"), Instance.new("UIStroke")
+        local squareFrame, uiStroke = Instance.new('Frame'), Instance.new('UIStroke')
         squareFrame.Name = drawingIndex
         squareFrame.BorderSizePixel = 0
 
@@ -318,39 +320,38 @@ function DrawingLib.new(drawingType)
 
         squareFrame.Parent, uiStroke.Parent = drawingUI, squareFrame
         return setmetatable({
-            __OBJECT = squareFrame,
-            __SIDE = uiStroke
+            obj = squareFrame
         }, {
             __newindex = function(_, index, value)
-                if typeof(squareObj[index]) == "nil" then return end
+                if typeof(squareObj[index]) == 'nil' then return end
 
-                if index == "Size" then
+                if index == 'Size' then
                     squareFrame.Size = UDim2.fromOffset(value.X, value.Y)
-                elseif index == "Position" then
+                elseif index == 'Position' then
                     squareFrame.Position = UDim2.fromOffset(value.X, value.Y)
-                elseif index == "Thickness" then
+                elseif index == 'Thickness' then
                     value = math.clamp(value, 0.6, 0x7fffffff)
                     uiStroke.Thickness = value
-                elseif index == "Filled" then
+                elseif index == 'Filled' then
                     squareFrame.BackgroundTransparency = (if value then convertTransparency(squareObj.Transparency) else 1)
                     uiStroke.Enabled = not value
-                elseif index == "Visible" then
+                elseif index == 'Visible' then
                     squareFrame.Visible = value
-                elseif index == "ZIndex" then
+                elseif index == 'ZIndex' then
                     squareFrame.ZIndex = value
-                elseif index == "Transparency" then
+                elseif index == 'Transparency' then
                     local transparency = convertTransparency(value)
 
                     squareFrame.BackgroundTransparency = (if squareObj.Filled then transparency else 1)
                     uiStroke.Transparency = transparency
-                elseif index == "Color" then
+                elseif index == 'Color' then
                     uiStroke.Color = value
                     squareFrame.BackgroundColor3 = value
                 end
                 squareObj[index] = value
             end,
             __index = function(self, index)
-                if index == "Remove" or index == 'Destroy' then
+                if index == 'Remove' or index == 'Destroy' then
                     return function()
                         squareFrame:Destroy()
                         squareObj.Remove(self)
@@ -358,17 +359,18 @@ function DrawingLib.new(drawingType)
                     end
                 end
                 return squareObj[index]
-            end
+            end,
+            __tostring = function() return 'Drawing' end
         })
-    elseif drawingType == "Image" then
+    elseif drawingType == 'Image' then
         local imageObj = ({
-            Data = "",
-            DataURL = "rbxassetid://0",
+            Data = '',
+            DataURL = 'rbxassetid://0',
             Size = Vector2.zero,
             Position = Vector2.zero
         } + baseDrawingObj)
 
-        local imageFrame = Instance.new("ImageLabel")
+        local imageFrame = Instance.new('ImageLabel')
         imageFrame.Name = drawingIndex
         imageFrame.BorderSizePixel = 0
         imageFrame.ScaleType = Enum.ScaleType.Stretch
@@ -381,100 +383,121 @@ function DrawingLib.new(drawingType)
 
         imageFrame.Parent = drawingUI
         return setmetatable({
-            __OBJECT = imageFrame
+            obj = imageFrame
         }, {
             __newindex = function(_, index, value)
-                if typeof(imageObj[index]) == "nil" then return end
+                if typeof(imageObj[index]) == 'nil' then return end
 
-                if index == "Data" then
+                if index == 'Data' then
                     -- later
-                elseif index == "DataURL" then -- temporary property
+                elseif index == 'DataURL' then -- temporary property
                     imageFrame.Image = value
-                elseif index == "Size" then
+                elseif index == 'Size' then
                     imageFrame.Size = UDim2.fromOffset(value.X, value.Y)
-                elseif index == "Position" then
+                elseif index == 'Position' then
                     imageFrame.Position = UDim2.fromOffset(value.X, value.Y)
-                elseif index == "Visible" then
+                elseif index == 'Visible' then
                     imageFrame.Visible = value
-                elseif index == "ZIndex" then
+                elseif index == 'ZIndex' then
                     imageFrame.ZIndex = value
-                elseif index == "Transparency" then
+                elseif index == 'Transparency' then
                     imageFrame.ImageTransparency = convertTransparency(value)
-                elseif index == "Color" then
+                elseif index == 'Color' then
                     imageFrame.ImageColor3 = value
                 end
                 imageObj[index] = value
             end,
             __index = function(self, index)
-                if index == "Remove" or index == 'Destroy' then
+                if index == 'Remove' or index == 'Destroy' then
                     return function()
                         imageFrame:Destroy()
                         imageObj.Remove(self)
                         return imageObj:Remove()
                     end
-                elseif index == "Data" then
+                elseif index == 'Data' then
                     return nil -- TODO: add error here
                 end
                 return imageObj[index]
-            end
-        })
-    elseif drawingType == "Quad" then
-        local quadObj = ({
-            PointA = Vector2.zero,
-            PointB = Vector2.zero,
-            PointC = Vector2.zero,
-            PointD = Vector3.zero,
-            Thickness = 1,
-            Filled = false
-        } + baseDrawingObj)
-
-        local _linePoints = table.create(0)
-        _linePoints.A = DrawingLib.new("Line")
-        _linePoints.B = DrawingLib.new("Line")
-        _linePoints.C = DrawingLib.new("Line")
-        _linePoints.D = DrawingLib.new("Line")
-        return setmetatable({
-            __POINTS = _linePoints
-        }, {
-            __newindex = function(_, index, value)
-                if typeof(quadObj[index]) == "nil" then return end
-
-                if index == "PointA" then
-                    _linePoints.A.From = value
-                    _linePoints.B.To = value
-                elseif index == "PointB" then
-                    _linePoints.B.From = value
-                    _linePoints.C.To = value
-                elseif index == "PointC" then
-                    _linePoints.C.From = value
-                    _linePoints.D.To = value
-                elseif index == "PointD" then
-                    _linePoints.D.From = value
-                    _linePoints.A.To = value
-                elseif (index == "Thickness" or index == "Visible" or index == "Color" or index == "ZIndex") then
-                    for _, linePoint in _linePoints do
-                        linePoint[index] = value
-                    end
-                elseif index == "Filled" then
-                    -- later
-                end
-                quadObj[index] = value
             end,
-            __index = function(self, index)
-                if index == "Remove" or index == 'Destroy' then
-                    return function()
-                        for _, linePoint in _linePoints do
-                            linePoint:Remove()
-                        end
-
-                        quadObj.Remove(self)
-                        return quadObj:Remove()
-                    end
-                end
-                return quadObj[index]
-            end
+            __tostring = function() return 'Drawing' end
         })
-    elseif drawingType == "Triangle" then
+    elseif drawingType == 'Quad' then
+        local QuadProperties = ({
+            Thickness = 1,
+            PointA = Vector2.new();
+            PointB = Vector2.new();
+            PointC = Vector2.new();
+            PointD = Vector2.new();
+            Filled = false;
+        }  + baseDrawingObj);
+
+        local PointA = DrawingLib.new('Line')
+        local PointB = DrawingLib.new('Line')
+        local PointC = DrawingLib.new('Line')
+        local PointD = DrawingLib.new('Line')
+
+        return setmetatable({
+            points = {PointA, PointB, PointC, PointD}
+        }, {
+            __newindex = (function(self, Property, Value)
+                if Property == 'Thickness' then
+                    PointA.Thickness = Value
+                    PointB.Thickness = Value
+                    PointC.Thickness = Value
+                    PointD.Thickness = Value
+                end
+                if Property == 'PointA' then
+                    PointA.From = Value
+                    PointB.To = Value
+                end
+                if Property == 'PointB' then
+                    PointB.From = Value
+                    PointC.To = Value
+                end
+                if Property == 'PointC' then
+                    PointC.From = Value
+                    PointD.To = Value
+                end
+                if Property == 'PointD' then
+                    PointD.From = Value
+                    PointA.To = Value
+                end
+                if Property == 'Visible' then
+                    PointA.Visible = true
+                    PointB.Visible = true
+                    PointC.Visible = true
+                    PointD.Visible = true
+                end
+                if Property == 'Filled' then
+                    -- i'll do this later
+                end
+                if Property == 'Color' then
+                    PointA.Color = Value
+                    PointB.Color = Value
+                    PointC.Color = Value
+                    PointD.Color = Value
+                end
+                if (Property == 'ZIndex') then
+                    PointA.ZIndex = Value
+                    PointB.ZIndex = Value
+                    PointC.ZIndex = Value
+                    PointD.ZIndex = Value
+                end
+            end),
+            __index = (function(self, Property)
+                if (string.lower(tostring(Property)) == 'remove') then
+                    return (function()
+                        PointA:Remove();
+                        PointB:Remove();
+                        PointC:Remove();
+                        PointD:Remove();
+                    end)
+                end
+
+                return QuadProperties[Property]
+            end)
+        });
+    elseif drawingType == 'Triangle' then
         local triangleObj = ({
             PointA = Vector2.zero,
             PointB = Vector2.zero,
@@ -484,35 +507,34 @@ function DrawingLib.new(drawingType)
         } + baseDrawingObj)
 
         local _linePoints = table.create(0)
-        _linePoints.A = DrawingLib.new("Line")
-        _linePoints.B = DrawingLib.new("Line")
-        _linePoints.C = DrawingLib.new("Line")
-        return setmetatable({
-            __POINTS = _linePoints
-        }, {
+        _linePoints.A = DrawingLib.new('Line')
+        _linePoints.B = DrawingLib.new('Line')
+        _linePoints.C = DrawingLib.new('Line')
+        return setmetatable(table.create(0), {
+            __tostring = function() return 'Drawing' end,
             __newindex = function(_, index, value)
-                if typeof(triangleObj[index]) == "nil" then return end
+                if typeof(triangleObj[index]) == 'nil' then return end
 
-                if index == "PointA" then
+                if index == 'PointA' then
                     _linePoints.A.From = value
                     _linePoints.B.To = value
-                elseif index == "PointB" then
+                elseif index == 'PointB' then
                     _linePoints.B.From = value
                     _linePoints.C.To = value
-                elseif index == "PointC" then
+                elseif index == 'PointC' then
                     _linePoints.C.From = value
                     _linePoints.A.To = value
-                elseif (index == "Thickness" or index == "Visible" or index == "Color" or index == "ZIndex") then
+                elseif (index == 'Thickness' or index == 'Visible' or index == 'Color' or index == 'ZIndex') then
                     for _, linePoint in _linePoints do
                         linePoint[index] = value
                     end
-                elseif index == "Filled" then
+                elseif index == 'Filled' then
                     -- later
                 end
                 triangleObj[index] = value
             end,
             __index = function(self, index)
-                if index == "Remove" or index == 'Destroy' then
+                if index == 'Remove' or index == 'Destroy' then
                     return function()
                         for _, linePoint in _linePoints do
                             linePoint:Remove()
@@ -523,9 +545,10 @@ function DrawingLib.new(drawingType)
                     end
                 end
                 return triangleObj[index]
-            end
+            end,
         })
     end
 end
 
+getgenv().Drawing = DrawingLib
 return DrawingLib
