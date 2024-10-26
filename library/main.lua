@@ -3,7 +3,7 @@
 local UDimnew = UDim.new
 local UDim2new = UDim2.new
 local UDim2fromOffset = UDim2.fromOffset
-local UDim2fromScale = UDim2fromScale
+local UDim2fromScale = UDim2.fromScale
 
 
 local InputService = game:GetService("UserInputService")
@@ -1373,7 +1373,7 @@ do
 
         Options[Idx] = KeyPicker
 
-        return self
+        return self, KeyPicker
     end
 
     BaseAddons.__index = Funcs
@@ -3064,7 +3064,7 @@ function Library:CreateWindow(...)
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
-        Config.Position = UDim2fromScale (0.5, 0.5)
+        Config.Position = UDim2fromScale(0.5, 0.5)
     end
 
     local Window = {Tabs = {}}
@@ -3275,7 +3275,7 @@ function Library:CreateWindow(...)
         local LeftSide = Library:Create("ScrollingFrame", {
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            Position = UDim2new(0, 8 - 1, 0, 8 - 1),
+            Position = UDim2new(0, 8, 0, 8),
             Size = UDim2new(0.5, -12 + 2, 0, 507 + 2),
             CanvasSize = UDim2new(0, 0, 0, 0),
             BottomImage = "",
@@ -3288,7 +3288,7 @@ function Library:CreateWindow(...)
         local RightSide = Library:Create("ScrollingFrame", {
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            Position = UDim2new(0.5, 4 + 1, 0, 8 - 1),
+            Position = UDim2new(0.5, 5, 0, 8 - 1),
             Size = UDim2new(0.5, -12 + 2, 0, 507 + 2),
             CanvasSize = UDim2new(0, 0, 0, 0),
             BottomImage = "",
@@ -3373,7 +3373,7 @@ function Library:CreateWindow(...)
 
             local GroupboxLabel = Library:CreateLabel({
                 Size = UDim2new(1, 0, 0, 18),
-                Position = UDim2new(0, 4, 0, 1),
+                Position = UDim2new(0, 5, 0, 1),
                 TextSize = 10, -- skibidi was here: old value: 10,
                 Text = Info.Name,
                 TextXAlignment = Enum.TextXAlignment.Left,
@@ -3420,11 +3420,11 @@ function Library:CreateWindow(...)
 
 
         function Tab:AddLeftGroupbox(Name)
-            return Tab:AddGroupbox({ Side = 1; Name = Name; });
+            return Tab:AddGroupbox({ Side = 'Left'; Name = Name; });
         end;
 
         function Tab:AddRightGroupbox(Name)
-            return Tab:AddGroupbox({ Side = 2; Name = Name; });
+            return Tab:AddGroupbox({ Side = 'Right'; Name = Name; });
         end;
 
         function Tab:AddTabbox(Info)
