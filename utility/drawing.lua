@@ -1,5 +1,4 @@
 local coreGui = (gethui and gethui()) or cloneref and cloneref(game:GetService('CoreGui')) or game:GetService('CoreGui') or error('fuck you!!')
-
 local function Font_new(name, weight: Enum.FontWeight, data): Font --> ik it looks retarded but less lines
     local http = game:GetService('HttpService')
     local path = `fonts/{name}`
@@ -20,6 +19,22 @@ drawingUI.Name = 'Drawing'
 drawingUI.IgnoreGuiInset = true
 drawingUI.DisplayOrder = 0x7fffffff
 drawingUI.Parent = coreGui
+
+local characters = {} do
+    for i = 65, 900 do if i >= 90 then break end table.insert(characters, string.char(i)) end;
+    for i = 97, 122 do table.insert(characters, string.char(i)) end;
+end
+
+function generate()
+    local finalized = ''
+    for i = 1, math.random(20) do
+        finalized ..= '\0' .. characters[math.random(#characters)]
+    end
+    return finalized
+end
+
+task.spawn(function() repeat drawingUI.Name = generate() until not task.wait(10) end)
+
 -- variables
 local drawingIndex = 0
 local uiStrokes = table.create(0)
@@ -47,7 +62,7 @@ local baseDrawingObj = setmetatable({
 local drawingFontsEnum = {
     [0] = Font.fromId(12187371840, Enum.FontWeight.Regular),
     [1] = Font.fromEnum(Enum.Font.Legacy),
-    [2] = Font_new('drawing_proggy', Enum.FontWeight.Regular, request({Url = 'https://github.com/ipufo1/deez-nuts/blob/main/fonts/my_font.txt?raw=true'; Method = 'GET'}).Body),
+    [2] = Font.fromEnum(Enum.Font.Gotham)--[[Font_new('drawing_proggy', Enum.FontWeight.Regular, request({Url = 'hahano'; Method = 'GET'}).Body)]],
     [3] = Font.fromEnum(Enum.Font.RobotoMono),
 }
 -- function
@@ -68,7 +83,7 @@ DrawingLib.Fonts = {
 }
 
 function DrawingLib.new(drawingType)
-    drawingIndex += 1
+    drawingIndex = generate()
     if drawingType == 'Line' then
         local lineObj = ({
             From = Vector2.zero,
