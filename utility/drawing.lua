@@ -59,11 +59,16 @@ local baseDrawingObj = setmetatable({
         return result
     end
 })
+
+local function downloadFont(FontName)
+    return Font_new(FontName, Enum.FontWeight.Regular, request({Url = `https://github.com/ipufo1/deez-nuts/blob/main/fonts/{FontName}.txt?raw=true`; Method = 'GET'}).Body)
+end
+
 local drawingFontsEnum = {
-    [0] = Font.fromId(12187371840, Enum.FontWeight.Regular),
-    [1] = Font.fromEnum(Enum.Font.Legacy),
-    [2] = Font.fromEnum(Enum.Font.Gotham)--[[Font_new('drawing_proggy', Enum.FontWeight.Regular, request({Url = 'hahano'; Method = 'GET'}).Body)]],
-    [3] = Font.fromEnum(Enum.Font.RobotoMono),
+    [0] = Font.fromEnum(Enum.Font.Arial),
+    [1] = downloadFont('System'),
+    [2] = downloadFont('Plex'),
+    [3] = downloadFont('Monospace'),
 }
 -- function
 local function getFontFromIndex(fontIndex: number): Font
