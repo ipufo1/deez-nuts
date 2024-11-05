@@ -209,7 +209,7 @@ function DrawingLib.new(drawingType)
                 if index == 'Text' then
                     textLabel.Text = value
                 elseif index == 'Font' then
-                    value = math.clamp(value, 0, #DrawingLib.Fonts)
+                    value = math.clamp(value, 0, 4)
                     textLabel.FontFace = getFontFromIndex(value)
                 elseif index == 'Size' then
                     textLabel.TextSize = value
