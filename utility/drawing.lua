@@ -69,6 +69,7 @@ local drawingFontsEnum = {
     [1] = downloadFont('System'),
     [2] = downloadFont('Plex'),
     [3] = downloadFont('Monospace'),
+    [4] = Font.fromId(12187371840, Enum.FontWeight.Regular)
 }
 -- function
 local function getFontFromIndex(fontIndex: number): Font
@@ -84,7 +85,8 @@ DrawingLib.Fonts = {
     ['UI'] = 0,
     ['System'] = 1,
     ['Plex'] = 2,
-    ['Monospace'] = 3
+    ['Monospace'] = 3;
+    ['Pixel'] = 4;
 }
 
 function DrawingLib.new(drawingType)
@@ -207,7 +209,7 @@ function DrawingLib.new(drawingType)
                 if index == 'Text' then
                     textLabel.Text = value
                 elseif index == 'Font' then
-                    value = math.clamp(value, 0, 3)
+                    value = math.clamp(value, 0, #DrawingLib.Fonts)
                     textLabel.FontFace = getFontFromIndex(value)
                 elseif index == 'Size' then
                     textLabel.TextSize = value
